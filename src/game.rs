@@ -22,18 +22,17 @@ impl fmt::Display for Game {
             write!(f, "{BLOCK}")?;
         }
 
-        writeln!(f)?;
+        write!(f, "\r\n")?;
         for _i in 2..self.height {
             write!(f, "{BLOCK}")?;
             for _j in 2..self.width {
                write!(f, " ")?;
             }
-            writeln!(f, "{BLOCK}")?;
+            write!(f, "{BLOCK}\r\n")?;
         }
-
         for _i in 0..self.width {
             write!(f,"{BLOCK}")?;
         }
-        Ok(()) 
+        Ok(())
     }
 }
