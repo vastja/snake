@@ -1,7 +1,9 @@
 mod game;
+mod snake;
 
 use game::Game;
 extern crate termion;
+extern crate test_case;
 
 use termion::raw::IntoRawMode;
 use termion::async_stdin;
@@ -27,9 +29,9 @@ fn main() {
         let input = stdin.next();
         if input.is_some() {
             let result = input.unwrap();
-            if (result.is_ok()) {
+            if result.is_ok() {
                 let input_key = result.unwrap();
-                if (input_key == b'q') {
+                if input_key == b'q' {
                     break;
                 }
             }
