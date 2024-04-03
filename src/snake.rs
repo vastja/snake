@@ -2,8 +2,8 @@ use std::collections::LinkedList;
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub struct Pixel {
-    x : u16,
-    y : u16,
+    pub x : u16,
+    pub y : u16,
 }
 
 pub struct Snake {
@@ -28,7 +28,7 @@ impl Snake {
     }
 
     pub fn do_step(&mut self) {
-        let mut next : Pixel = (*self.body.front().unwrap()).clone();
+        let mut next : Pixel = self.head();
         match self.direction {
             Direction::Up => next.y += 1,
             Direction::Right => next.x += 1,
@@ -37,6 +37,10 @@ impl Snake {
         }
         self.body.push_front(next);
         self.body.pop_back();
+    }
+
+    pub fn head(&self) -> Pixel {
+        (*self.body.front().unwrap()).clone()
     }
 }
 
