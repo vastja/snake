@@ -13,7 +13,7 @@ use std::time::Duration;
 
 fn main() {
     println!("Snake in terminal.");
-    let game = Game::new(16, 8);
+    let mut game = Game::new(16, 8);
 
 
     let stdout = stdout();
@@ -25,26 +25,46 @@ fn main() {
         termion::clear::All, termion::cursor::Hide)
          .unwrap();
     
+    let mut timeElapsed = 0;
+
     loop {
         let input = stdin.next();
         if input.is_some() {
             let result = input.unwrap();
             if result.is_ok() {
                 let input_key = result.unwrap();
-                if input_key == b'q' {
-                    break;
+                match input_key {
+                    b'q' => break,
+                    b'a' => game.change_direction(snake::Direction::Left),
+                    b'w' => game.change_direction(snake::Direction::Up),
+                    b's' => game.change_direction(snake::Direction::Down),
+                    b'd' => game.change_direction(snake::Direction::Right),
+                    _ => (),
                 }
             }
         }
         
         thread::sleep(Duration::from_millis(50));
-        
+        timeElapsed += 50;
+
         write!(stdout,
             "{}",
             termion::cursor::Goto(1, 1))
              .unwrap();
-        
-        write!(stdout, "{game}\r\n").unwrap();
-        stdout.flush().unwrap();
+        if 250 <= timeElapsed {
+            timeElapsed = 0;
+            game.update();
+            if (game.is_game_over) {
+                write!(stdout,
+                    "{}",
+                    termion::clear::All)
+                     .unwrap();
+                write!(stdout, "Game Over\r\n").unwrap();
+            }
+            else {
+                write!(stdout, "{game}\r\n").unwrap();
+            }
+            stdout.flush().unwrap();
+        }
     }
 }
