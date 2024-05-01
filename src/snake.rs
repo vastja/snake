@@ -22,7 +22,7 @@ impl Snake {
         }
     }
 
-    pub fn do_step(&mut self) {
+    pub fn do_step(&mut self, grows : bool) {
         let mut next : Pixel = self.head();
         match self.direction {
             Direction::Down => next.y += 1,
@@ -31,7 +31,9 @@ impl Snake {
             Direction::Left => next.x -= 1, 
         }
         self.body.push_front(next);
-        self.body.pop_back();
+        if !grows {
+            self.body.pop_back();
+        }
     }
 
     pub fn head(&self) -> Pixel {

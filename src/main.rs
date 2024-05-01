@@ -25,7 +25,7 @@ fn main() {
         termion::clear::All, termion::cursor::Hide)
          .unwrap();
     
-    let mut timeElapsed = 0;
+    let mut time_elapsed = 0;
 
     loop {
         let input = stdin.next();
@@ -45,14 +45,14 @@ fn main() {
         }
         
         thread::sleep(Duration::from_millis(50));
-        timeElapsed += 50;
+        time_elapsed += 50;
 
         write!(stdout,
             "{}",
             termion::cursor::Goto(1, 1))
              .unwrap();
-        if 250 <= timeElapsed {
-            timeElapsed = 0;
+        if 250 <= time_elapsed {
+            time_elapsed = 0;
             game.update();
             if (game.is_game_over) {
                 write!(stdout,

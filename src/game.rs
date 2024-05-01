@@ -3,6 +3,8 @@ extern crate rand;
 use snake::{Snake, Direction};
 use std::fmt;
 
+use crate::snake;
+
 const BLOCK : char = '\u{2580}';
 const EMPTY : char = '\u{0020}';
 const APPLE : char = '\u{002A}';
@@ -54,9 +56,18 @@ impl Game {
     }
 
     pub fn update_snake_position(&mut self) {
-        let tail : Pixel = self.snake.tail();
-        self.board[Game::get_index(tail.y as usize, tail.x as usize, self.width as usize)] = EMPTY;
-        self.snake.do_step();
+        let eat_apple = match self.apple {
+            Some(position) => self.snake.head() == position,
+            None => false
+        };
+        if !eat_apple {
+            let tail : Pixel = self.snake.tail();
+            self.board[Game::get_index(tail.y as usize, tail.x as usize, self.width as usize)] = EMPTY;
+        }
+        else {
+            self.apple = None;
+        }
+        self.snake.do_step(eat_apple);
         let head : Pixel = self.snake.head();
         self.board[Game::get_index(head.y as usize, head.x as usize, self.width as usize)] = BLOCK;
     }
