@@ -3,5 +3,6 @@ name = "snake"
 version = "0.0.1"
 
 [dependencies]
+rand = "0.8.5"
 termion = "*"
 test-case = "*"

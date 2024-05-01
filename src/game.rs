@@ -1,11 +1,12 @@
-use snake::{Snake, Pixel, Direction};
-use termion::get_tty;
-use std::fmt;
+extern crate rand;
 
-use crate::snake;
+use snake::{Snake, Pixel, Direction};
+use std::fmt;
 
 const BLOCK : char = '\u{2580}';
 const EMPTY : char = '\u{0020}';
+const APPLE : char = '\u{002A}';
+
 pub struct Game {
     pub is_game_over : bool,
     board: Vec<char>,
@@ -60,7 +61,7 @@ impl Game {
                 return;
             }
             self.update_snake_position();
-
+            self.spawn_apple();
         }
 
     }
@@ -72,6 +73,21 @@ impl Game {
     fn get_index(i: usize, j: usize, width: usize) -> usize {
         i * width + j
     }
+
+    fn spawn_apple(&mut self) {
+        // Todo - handle when the board is full
+        let mut position = self.get_random_board_position();
+        while self.snake.consists_of(position) {
+            position = self.get_random_board_position();
+        }
+        self.board[Game::get_index(position.y as usize, position.x as usize, self.width as usize)] = APPLE; 
+    } 
+
+    fn get_random_board_position(&self) -> Pixel {
+        let x = (rand::random::<f32>() * (self.width as f32 - 2.0)) + 1.0;
+        let y = (rand::random::<f32>() * (self.height as f32 - 2.0)) + 1.0;
+        Pixel { x: x as u16, y: y as u16}
+    }   
 }
 
 impl fmt::Display for Game {

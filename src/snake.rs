@@ -47,6 +47,10 @@ impl Snake {
         (*self.body.back().unwrap()).clone()
     }
 
+    pub fn consists_of(&self, pixel : Pixel) -> bool {
+        self.body.contains(&pixel)
+    }
+
 }
 
 #[cfg(test)]
