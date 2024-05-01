@@ -1,11 +1,17 @@
 extern crate rand;
 
-use snake::{Snake, Pixel, Direction};
+use snake::{Snake, Direction};
 use std::fmt;
 
 const BLOCK : char = '\u{2580}';
 const EMPTY : char = '\u{0020}';
 const APPLE : char = '\u{002A}';
+
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+pub struct Pixel {
+    pub x : u16,
+    pub y : u16,
+}
 
 pub struct Game {
     pub is_game_over : bool,
@@ -13,6 +19,7 @@ pub struct Game {
     snake: Snake,
     width: u16,
     height: u16,
+    apple: Option<Pixel>
 }
 
 impl Game {
@@ -23,7 +30,8 @@ impl Game {
             board: Game::initialize_border(width as usize, height as usize),
             width,
             height,
-            snake: Snake::new(Pixel { x : (width as f32 * 0.5) as u16, y : (height as f32 * 0.5) as u16}, Direction::Right)
+            snake: Snake::new(Pixel { x : (width as f32 * 0.5) as u16, y : (height as f32 * 0.5) as u16}, Direction::Right),
+            apple: None
         }
     }
 
@@ -61,9 +69,10 @@ impl Game {
                 return;
             }
             self.update_snake_position();
-            self.spawn_apple();
+            if self.apple.is_none() {
+                self.apple = Some(self.spawn_apple());
+            }
         }
-
     }
 
     pub fn change_direction(&mut self, direction : Direction) {
@@ -74,13 +83,14 @@ impl Game {
         i * width + j
     }
 
-    fn spawn_apple(&mut self) {
+    fn spawn_apple(&mut self) -> Pixel {
         // Todo - handle when the board is full
         let mut position = self.get_random_board_position();
         while self.snake.consists_of(position) {
             position = self.get_random_board_position();
         }
-        self.board[Game::get_index(position.y as usize, position.x as usize, self.width as usize)] = APPLE; 
+        self.board[Game::get_index(position.y as usize, position.x as usize, self.width as usize)] = APPLE;
+        position
     } 
 
     fn get_random_board_position(&self) -> Pixel {
@@ -105,8 +115,6 @@ impl fmt::Display for Game {
 
 #[cfg(test)]
 mod tests {
-    use crate::snake::Pixel;
-
     use super::Game;
 
     #[test]

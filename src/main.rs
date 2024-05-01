@@ -13,7 +13,7 @@ use std::time::Duration;
 
 fn main() {
     println!("Snake in terminal.");
-    let mut game = Game::new(16, 8);
+    let mut game = Game::new(32, 16);
 
 
     let stdout = stdout();

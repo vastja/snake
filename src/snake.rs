@@ -1,10 +1,5 @@
 use std::collections::LinkedList;
-
-#[derive(Copy, Clone, Eq, PartialEq, Debug)]
-pub struct Pixel {
-    pub x : u16,
-    pub y : u16,
-}
+use game::Pixel;
 
 pub struct Snake {
     body : LinkedList<Pixel>,
