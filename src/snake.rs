@@ -22,7 +22,7 @@ impl Snake {
         }
     }
 
-    pub fn do_step(&mut self, grows : bool) {
+    pub fn do_step<'a, 'b>(&'a mut self, grows : bool) -> Result<(), &'b str> {
         let mut next : Pixel = self.head();
         match self.direction {
             Direction::Down => next.y += 1,
@@ -30,10 +30,17 @@ impl Snake {
             Direction::Up => next.y  -= 1,
             Direction::Left => next.x -= 1, 
         }
+
+        if self.consists_of(next) {
+            return Result::Err("Snake crashed into itself.");
+        }
+
         self.body.push_front(next);
         if !grows {
             self.body.pop_back();
         }
+
+        Result::Ok(())
     }
 
     pub fn head(&self) -> Pixel {
@@ -47,7 +54,6 @@ impl Snake {
     pub fn consists_of(&self, pixel : Pixel) -> bool {
         self.body.contains(&pixel)
     }
-
 }
 
 #[cfg(test)]
@@ -67,19 +73,21 @@ mod tests {
     #[test_case(Direction::Down, Pixel { x : 1, y : 2 })]
     #[test_case(Direction::Left, Pixel { x : 0, y : 1 })]
     fn snake_step_change_head_correctly(direction : Direction, expected_head_position: Pixel) {
-         let mut snake = Snake::new(Pixel { x: 1, y: 1}, direction);
+        let mut snake = Snake::new(Pixel { x: 1, y: 1}, direction);
 
-         snake.do_step();
+        let result = snake.do_step(false);
 
-         assert_eq!(*snake.body.front().unwrap(), expected_head_position);
+        assert_eq!(result.is_ok(), true);
+        assert_eq!(snake.head(), expected_head_position);
     }
 
     #[test]
     fn snake_step_remove_tail() {
         let mut snake = Snake::new(Pixel {x : 0, y : 0}, Direction::Right);
 
-        snake.do_step();
+        let result = snake.do_step(false);
 
-        assert_eq!(snake.body.contains(&Pixel { x : 0, y : 0}), false);
+        assert_eq!(result.is_ok(), true);
+        assert_eq!(snake.consists_of(Pixel { x : 0, y : 0}), false);
     }
 }

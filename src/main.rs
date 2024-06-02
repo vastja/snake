@@ -54,7 +54,7 @@ fn main() {
         if 250 <= time_elapsed {
             time_elapsed = 0;
             game.update();
-            if (game.is_game_over) {
+            if game.is_game_over{
                 write!(stdout,
                     "{}",
                     termion::clear::All)

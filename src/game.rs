@@ -3,13 +3,11 @@ extern crate rand;
 use snake::{Snake, Direction};
 use std::fmt;
 
-use crate::snake;
-
 const BLOCK : char = '\u{2580}';
 const EMPTY : char = '\u{0020}';
 const APPLE : char = '\u{002A}';
 
-#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct Pixel {
     pub x : u16,
     pub y : u16,
@@ -55,7 +53,7 @@ impl Game {
         board
     }
 
-    pub fn update_snake_position(&mut self) {
+    pub fn update_snake_position(&mut self) -> Result<(), &str> {
         let eat_apple = match self.apple {
             Some(position) => self.snake.head() == position,
             None => false
@@ -67,19 +65,30 @@ impl Game {
         else {
             self.apple = None;
         }
-        self.snake.do_step(eat_apple);
-        let head : Pixel = self.snake.head();
-        self.board[Game::get_index(head.y as usize, head.x as usize, self.width as usize)] = BLOCK;
+        let step_result : Result<(), &str> = self.snake.do_step(eat_apple);
+        match step_result {
+            Ok(..) => {
+                let head : Pixel = self.snake.head();
+                self.board[Game::get_index(head.y as usize, head.x as usize, self.width as usize)] = BLOCK;
+            },
+            Err(..) => { 
+                // Nothing
+            }
+        }
+        step_result
     }
 
     pub fn update(&mut self) {
         if !self.is_game_over {
             let head = self.snake.head();
-            if (head.x == 0 || head.y == 0 || head.x == self.width - 1|| head.y == self.height - 1) {
+            if head.x == 0 || head.y == 0 || head.x == self.width - 1|| head.y == self.height - 1 {
                 self.is_game_over = true;
                 return;
             }
-            self.update_snake_position();
+            match self.update_snake_position() {
+                Ok(..) => { /* Nothing */ },
+                Err(..) => self.is_game_over = true
+            }
             if self.apple.is_none() {
                 self.apple = Some(self.spawn_apple());
             }
@@ -132,6 +141,6 @@ mod tests {
     fn after_creation_snake_is_in_the_middle() {
         let game = Game::new(100, 50);
 
-        assert_eq!(game.snake.head(), Pixel {x: 50, y:25})
+        assert_eq!(game.snake.head(), super::Pixel {x: 50, y:25})
     } 
 }
